@@ -1,0 +1,3 @@
+apt-get update
+apt install docker.io
+apt install docker-compose

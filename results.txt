@@ -1,0 +1,52 @@
+shardingVersion
+{ _id: 1,
+  minCompatibleVersion: 5,
+  currentVersion: 6,
+  clusterId: ObjectId("6273487d8aa409100c8f63f2") }
+shards
+[ { _id: 'shard1rs',
+    host: 'shard1rs/192.168.1.12:50004,192.168.1.12:50005,192.168.1.12:50006',
+    state: 1,
+    topologyTime: Timestamp({ t: 1651722371, i: 1 }) },
+  { _id: 'shard2rs',
+    host: 'shard2rs/192.168.1.12:50007,192.168.1.12:50008,192.168.1.12:50009',
+    state: 1,
+    topologyTime: Timestamp({ t: 1651722373, i: 1 }) } ]
+active mongoses
+[ { '5.0.6': 1 } ]
+autosplit
+{ 'Currently enabled': 'yes' }
+balancer
+{ 'Currently enabled': 'yes',
+  'Failed balancer rounds in last 5 attempts': 0,
+  'Currently running': 'no',
+  'Migration Results for the last 24 hours': { '1': 'Success' } }
+databases
+[ { database: { _id: 'config', primary: 'config', partitioned: true },
+    collections: {} },
+  { database: 
+     { _id: 'nosql',
+       primary: 'shard1rs',
+       partitioned: true,
+       version: 
+        { uuid: UUID("52219f3a-078e-4318-b546-fb6cfe7304bc"),
+          timestamp: Timestamp({ t: 1651722374, i: 1 }),
+          lastMod: 1 } },
+    collections: 
+     { 'nosql.zipcodes': 
+        { shardKey: { state: 1 },
+          unique: false,
+          balancing: true,
+          chunkMetadata: 
+           [ { shard: 'shard1rs', nChunks: 1 },
+             { shard: 'shard2rs', nChunks: 1 } ],
+          chunks: 
+           [ { min: { state: MinKey() },
+               max: { state: 'LA' },
+               'on shard': 'shard2rs',
+               'last modified': Timestamp({ t: 2, i: 0 }) },
+             { min: { state: 'LA' },
+               max: { state: MaxKey() },
+               'on shard': 'shard1rs',
+               'last modified': Timestamp({ t: 2, i: 1 }) } ],
+          tags: [] } } } ]

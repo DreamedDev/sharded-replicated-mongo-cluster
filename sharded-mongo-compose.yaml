@@ -1,0 +1,111 @@
+
+version: '3'
+
+services:
+
+  #config server - replicaset 3 nodes
+  config1:
+    container_name: config1
+    image: mongo
+    command: mongod --configsvr --replSet configrs --port 27017 --dbpath /data/db
+    ports:
+      - 50001:27017
+    volumes:
+      - config1:/data/db
+
+  config2:
+    container_name: config2
+    image: mongo
+    command: mongod --configsvr --replSet configrs --port 27017 --dbpath /data/db
+    ports:
+      - 50002:27017
+    volumes:
+      - config2:/data/db
+
+  config3:
+    container_name: config3
+    image: mongo
+    command: mongod --configsvr --replSet configrs --port 27017 --dbpath /data/db
+    ports:
+      - 50003:27017
+    volumes:
+      - config3:/data/db
+
+  #shard 1 - replicaset 3 nodes
+  shard1_1:
+    container_name: shard1_1
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50004:27017
+    volumes:
+      - shard1_1:/data/db
+
+  shard1_2:
+    container_name: shard1_2
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50005:27017
+    volumes:
+      - shard1_2:/data/db
+
+  shard1_3:
+    container_name: shard1_3
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50006:27017
+    volumes:
+      - shard1_3:/data/db
+
+  #shard 2 - replicaset 3 nodes
+  shard2_1:
+    container_name: shard2_1
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50007:27017
+    volumes:
+      - shard2_1:/data/db
+
+  shard2_2:
+    container_name: shard2_2
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50008:27017
+    volumes:
+      - shard2_2:/data/db
+
+  shard2_3:
+    container_name: shard2_3
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50009:27017
+    volumes:
+      - shard2_3:/data/db
+  
+  #mongos 1 instance
+  mongos:
+    container_name: mongos
+    image: mongo
+    command: mongos --configdb configrs/${IP}:50001,${IP}:50002,${IP}:50003 --bind_ip 0.0.0.0 --port 27017
+    ports:
+      - 50000:27017
+
+
+volumes:
+  #config server volumes
+  config1: {}
+  config2: {}
+  config3: {}
+  #shard 1 volumes
+  shard1_1: {}
+  shard1_2: {}
+  shard1_3: {}
+  #shard 2 volumes
+  shard2_1: {}
+  shard2_2: {}
+  shard2_3: {}

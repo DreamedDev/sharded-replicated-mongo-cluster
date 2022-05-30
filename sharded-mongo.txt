@@ -1,0 +1,82 @@
+# Create .env for docker compose IP variable
+echo "IP=192.168.1.12" > .env
+
+# Run mongo nodes in containers using docker-compose:
+docker-compose -f sharded-mongo-compose.yaml up --build -d
+
+# Connect to config1 (config server):
+mongo mongodb://192.168.1.12:50001
+
+# Create configrs (config server replica set):
+rs.initiate(
+  {
+    _id: "configrs",
+    configsvr: true,
+    members: [
+      { _id : 0, host : "192.168.1.12:50001" },
+      { _id : 1, host : "192.168.1.12:50002" },
+      { _id : 2, host : "192.168.1.12:50003" }
+    ]
+  }
+)
+exit
+
+# Connect to shard1_1 (shard 1):
+mongo mongodb://192.168.1.12:50004
+
+# Create shard1rs replica set:
+rs.initiate(
+  {
+    _id: "shard1rs",
+    members: [
+      { _id : 0, host : "192.168.1.12:50004" },
+      { _id : 1, host : "192.168.1.12:50005" },
+      { _id : 2, host : "192.168.1.12:50006" }
+    ]
+  }
+)
+exit
+
+# Connect to shard2_1 (shard 2):
+mongo mongodb://192.168.1.12:50007
+
+# Create shard1rs replica set:
+rs.initiate(
+  {
+    _id: "shard2rs",
+    members: [
+      { _id : 0, host : "192.168.1.12:50007" },
+      { _id : 1, host : "192.168.1.12:50008" },
+      { _id : 2, host : "192.168.1.12:50009" }
+    ]
+  }
+)
+exit
+
+
+# Connect to mongos:
+mongo mongodb://192.168.1.12:50000
+
+# Add shards:
+sh.addShard("shard1rs/192.168.1.12:50004,192.168.1.12:50005,192.168.1.12:50006")
+sh.addShard("shard2rs/192.168.1.12:50007,192.168.1.12:50008,192.168.1.12:50009")
+exit
+
+# Import data
+mongoimport -h 192.168.1.12:50000 -d nosql -c zipcodes --file zipcodes.json
+
+# Connect to mongos again and split data:
+mongo mongodb://192.168.1.12:50000
+use admin
+db.runCommand({enableSharding: "nosql"})
+
+use nosql
+db.zipcodes.createIndex({state: 1})
+sh.shardCollection("nosql.zipcodes", {"state": 1})
+sh.splitAt("nosql.zipcodes", {state: 'LA'})
+
+
+# Show results:
+db.zipcodes.getShardDistribution()
+sh.status()
+exit
