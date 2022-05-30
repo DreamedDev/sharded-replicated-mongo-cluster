@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
 else
   # Connect to config1 (config server):
   # Create configrs (config server replica set):
-  sleep 2
+  sleep 5
   mongo mongodb://$1:50001 <<EOF
   rs.initiate(
     {
@@ -23,7 +23,7 @@ EOF
 
   # Connect to shard1_1 (shard 1):
   # Create shard1rs replica set:
-  sleep 2
+  sleep 5
   mongo mongodb://$1:50004 <<EOF
   rs.initiate(
     {
@@ -40,7 +40,7 @@ EOF
 
   # Connect to shard2_1 (shard 2):
   # Create shard1rs replica set:
-  sleep 2
+  sleep 5
   mongo mongodb://$1:50007 <<EOF
   rs.initiate(
     {
@@ -65,12 +65,12 @@ EOF
 EOF
 
   # Import data:
-  sleep 2
+  sleep 5
   mongoimport -h $1:50000 -d nosql -c zipcodes --file zipcodes.json
 
   # Connect to mongos again and split data:
   # Show results:
-  sleep 2
+  sleep 5
   mongo mongodb://$1:50000 <<EOF
   use admin
   db.runCommand({enableSharding: "nosql"})

@@ -20,8 +20,8 @@ The above project presents how to automate mongo cluster building with nodes rep
                'last modified': Timestamp({ t: 2, i: 1 }) } ],
           tags: [] } } } ]
 ```
-4. Automated cluster building script uses installed docker and docker-compose.
-5. To build this cluster just use command *create.sh \<ip device\>*
+4. Automated cluster building script uses installed docker, docker-compose and mongo.
+5. To build this cluster just use command *./create.sh \<ip device\>* from main directory
 
 The script creates cluster with following params:
 - Config server: replica set (3 nodes) ports: 50001, 50002, 50003
